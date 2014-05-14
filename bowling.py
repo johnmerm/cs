@@ -59,14 +59,14 @@ def bowling(balls):
         bcnt += len(f)
         if t == 'strike':
             score += 10
+            if bcnt<len(balls):
+                score += balls[bcnt]
             if bcnt<len(balls)-1:
-                score += balls[bcnt+1]
-            if bcnt<len(balls)-2:
-                score += balls[bcnt+2] 
+                score += balls[bcnt+1] 
         elif t == 'spare':
             score += 10
-            if bcnt<len(balls)-1:
-                score += balls[bcnt+1]
+            if bcnt<len(balls):
+                score += balls[bcnt]
             
         else:
             score += t
@@ -83,12 +83,15 @@ def test_bowling():
     print   0 == bowling([0] * 20)
     print  20 == bowling([1] * 20)
     print  80 == bowling([4] * 20)
+    
     print 190 == bowling([9,1] * 10 + [9])
+    
     print 300 == bowling([10] * 12)
     
     print 200 == bowling([10, 5,5] * 5 + [10])
     
     print  11 == bowling([0,0] * 9 + [10,1,0])
+    
     print  12 == bowling([0,0] * 8 + [10, 1,0])
 
 

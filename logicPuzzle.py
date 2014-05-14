@@ -28,33 +28,48 @@ then you would return:
 
 (You can assume that the days mentioned are all in the same week.)
 """
-import itertools
+from itertools import permutations
 
 def logic_puzzle():
+    
     days = Mon,Tue,Wed,Thu,Fri = [1,2,3,4,5]
+    orderings = list(permutations(days))
+    
+    orde = ((Hamming,Knuth,Minsky,Simon,Wilkes) 
+           for Hamming,Knuth,Minsky,Simon,Wilkes in orderings
+           for programmer,writer,designer,manager,np in orderings
+           for iphone,droid,laptop,tablet,ni in orderings
+           #1. The person who arrived on Wednesday bought the laptop.
+           if laptop is Wed #1
+           #2. The programmer is not Wilkes.
+           #3. Of the programmer and the person who bought the droid,
+           #      one is Wilkes and the other is Hamming. 
+           if programmer is Hamming and droid is Wilkes #2 & 3
+           #4. The writer is not Minsky.
+           if writer is not Minsky #4
+           #5. Neither Knuth nor the person who bought the tablet is the manager.
+           if manager is not tablet and manager is not Knuth #5
+           #6. Knuth arrived the day after Simon.
+           if Knuth is Simon+1
+           if Thu is not designer
+           if Fri is not tablet
+           if designer is not droid
+           if Knuth is manager+1
+           if (laptop is Mon or laptop is writer ) and (Wilkes is Mon or Wilkes is writer ) and laptop is not Wilkes
+           if Tue is tablet or Tue is iphone
+ 
+           )
+    config = next(orde)
 
-    orderings = list(itertools.permutations(days))
+    names = ['Hamming', 'Knuth', 'Minsky', 'Simon', 'Wilkes']
+    
+    srt = sorted(zip(names,config),key = lambda x:x[1])
+    
+    return [s[0] for s in srt]
 
-    return next(( o  for o in orderings
-              for Mon,Tue,Wed,Thu,Fri in orderings
-              for Hamming,Knuth,Minsky,Simon,Wilkes in orderings
-              for laptop,droid,tablet,iphone,_ in orderings
-              for manager,programmer,designer,writer,_ in orderings
-              if Wed is laptop              #1
-              if programmer is not Wilkes   #2
-              if (programmer in [Wilkes,Hamming] or droid in [Wilkes,Hamming]) and programmer is not droid #3
-              if writer is not Minsky       #4
-              if Knuth is not manager and tablet is not manager #5
-              if Knuth == Simon+1 #6
-              if Thu is not designer #7
-              if Fri is not tablet #8
-              if designer is not droid #9
-              if Knuth == manager+1 #10
-              if (Wilkes in [Mon,writer] or laptop in [Mon,writer]) and Wilkes is not laptop #11
-              if iphone is Tue or tablet is Tue
-                  
-              ))
+print logic_puzzle() 
+
+                            
 
       
-dd = [d for d in list(logic_puzzle())]
-print dd
+
