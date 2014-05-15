@@ -58,6 +58,45 @@ def poly(coefs):
     '30 * x**2 + 20 * x + 10'.  Also store the coefs on the .coefs attribute of
     the function, and the str of the formula on the .__name__ attribute.'"""
     # your code here (I won't repeat "your code here"; there's one for each function)
+    
+    while coefs[-1] == 0:
+        coefs = coefs[:-1]
+    
+    def name_part(n,c):
+        sign = '' if c<0 else '+' 
+        if c ==0:
+            return None
+        else:
+            if n == 0:
+                r =  str(c)
+            elif n ==1:
+                if c == 1:
+                    r =  'x'
+                else:
+                    r =  str(c)+' * x'
+            else:
+                if c == 1:
+                    r =  'x**'+str(n)
+                else:
+                    r =  str(c)+' * x**'+str(n)
+        return sign+r
+        
+            
+    
+    
+    name_parts = [name_part(n,c) for n,c in enumerate(coefs)]
+    name_parts = filter(lambda x:x,name_parts)
+    name = ' '.join(reversed(name_parts))
+    if name[0]=='+':
+        name = name[1:]
+    
+    fn = lambda x:eval(name)
+    fn.__name__ = name
+    fn.coefs = coefs
+    
+    return fn
+    
+    
 
 
 def test_poly():
@@ -110,21 +149,56 @@ def same_name(name1, name2):
 def is_poly(x):
     "Return true if x is a poly (polynomial)."
     ## For examples, see the test_poly function
+    try:
+        return x.coefs != None
+    except Exception, e:
+        return False
 
 def add(p1, p2):
     "Return a new polynomial which is the sum of polynomials p1 and p2."
-
+    coefs1 = p1.coefs
+    coefs2 = p2.coefs
+    
+    def get(c,i):
+        return c[i] if i<len(c) else 0
+    
+    coefs_add = tuple([get(coefs1,i)+get(coefs2,i) for i in range(max(len(coefs1),len(coefs2)))])
+    return poly(coefs_add)
+                 
 
 def sub(p1, p2):
     "Return a new polynomial which is the difference of polynomials p1 and p2."
-
+    "Return a new polynomial which is the sum of polynomials p1 and p2."
+    coefs1 = p1.coefs
+    coefs2 = p2.coefs
+    
+    def get(c,i):
+        return c[i] if i<len(c) else 0
+    
+    coefs_add =tuple([get(coefs1,i)-get(coefs2,i) for i in range(max(len(coefs1),len(coefs2)))])
+    return poly(coefs_add)
+    
 
 def mul(p1, p2):
     "Return a new polynomial which is the product of polynomials p1 and p2."
+    coefs1 = p1.coefs
+    coefs2 = p2.coefs
+    
+    m_coefs = [0 for i in range(len(coefs1)+len(coefs2))]
+    for i in range(len(coefs1)):
+        for j in range(len(coefs2)):
+            m_coefs[i+j] += coefs1[i]*coefs2[j] 
+    
+    return poly(tuple(m_coefs))
 
 
 def power(p, n):
     "Return a new polynomial which is p to the nth power (n a non-negative integer)."
+    p_coef = poly(p.coefs)
+    for i in range(1,n):
+        p_coef = mul(p_coef,p)
+    return p_coef
+    
 
 
 """
@@ -141,10 +215,16 @@ to the function integral (withh default C=0).
     
 def deriv(p):
     "Return the derivative of a function p (with respect to its argument)."
+    coefs = p.coefs
+    d_coefs = tuple([coefs[i]*(i) for i in range(1,len(coefs))])
+    return poly(d_coefs)
 
 
 def integral(p, C=0):
     "Return the integral of a function p (with respect to its argument)."
+    coefs = p.coefs
+    i_coefs = tuple([C]+[float(coefs[i])/(i+1) for i in range(len(coefs))])
+    return poly(i_coefs)
 
 
 """
@@ -176,3 +256,6 @@ def test_poly2():
     assert p1(100) == newp1(100)
     assert same_name(p1.__name__,newp1.__name__)
 
+
+
+print test_poly()
