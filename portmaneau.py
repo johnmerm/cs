@@ -53,6 +53,37 @@ larger list of words.
 
 def natalie(words):
     "Find the best Portmanteau word formed from any two of the list of words."
+    prefixes = map(lambda x:[x[0:i+1] for i in range(len(x))],words)
+    suffixes = map(lambda x:[x[i:] for i in range(len(x))],words)
+    
+    
+    
+    matches = [(words[si],words[pi],p) for pi,pw in enumerate(prefixes) 
+                     for si,sw in enumerate(suffixes)
+                     for p in pw for s in sw if p == s and pi != si ]
+    
+    
+    def merger(s,p,c):
+        si = s.index(c)
+        pi = len(c)
+        r = s[0:si]+c+p[pi:]
+        if r == s or r == p:
+            score = -1000
+        else:
+            score = len(r) - abs(len(r)/4-si) - abs(len(r)/4-(len(p)-len(c))) -  abs(len(r)/2 -len(c)) 
+        return r,score
+    
+    rslt = [merger(a[0],a[1],a[2]) for a in matches]
+     
+    rslt = filter(lambda x:x[1]>-1000, rslt)
+    if len(rslt) == 0:
+        return None
+    else:
+        rslt_max = max(rslt,key= lambda x:x[1])
+        return rslt_max[0]
+    
+    
+    
 
 def test_natalie():
     "Some test cases for natalie"
@@ -77,5 +108,6 @@ def test_natalie():
 
 
 print test_natalie()
+#print natalie(['night', 'day'])
 
 
